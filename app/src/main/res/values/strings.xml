@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Vini Veritas</string>
+    <string name="titulo_cadastro">Cadastro de Vinho</string>
+    <string name="nome_vinho">Nome do Vinho:</string>
+    <string name="safra">Safra:</string>
+    <string name="pais_origem">País de Origem:</string>
+    <string name="tipo_vinho">Tipo de Vinho:</string>
+    <string name="caracteristicas">Características:</string>
+    <string name="comentarios">Comentários:</string>
+    <string name="hint_nome_vinho">Digite o nome do vinho</string>
+    <string name="hint_safra">Ex: 2020</string>
+    <string name="hint_comentarios">Suas impressões sobre o vinho</string>
+    <string name="botao_limpar">Limpar</string>
+    <string name="botao_salvar">Salvar</string>
+    <string name="tipo_tinto">Tinto</string>
+    <string name="tipo_branco">Branco</string>
+    <string name="tipo_rose">Rosé</string>
+    <string name="tipo_espumante">Espumante</string>
+    <string name="caracteristica_seco">Seco</string>
+    <string name="caracteristica_doce">Doce</string>
+    <string name="caracteristica_frutado">Frutado</string>
+    <string name="caracteristica_tanico">Tânico</string>
+    <string name="formulario_limpo">Formulário limpo com sucesso!</string>
+    <string name="erro_nome_vazio">Por favor, informe o nome do vinho!</string>
+    <string name="erro_safra_vazia">Por favor, informe a safra!</string>
+    <string name="erro_pais_nao_selecionado">Por favor, selecione um país!</string>
+    <string name="erro_tipo_nao_selecionado">Por favor, selecione o tipo de vinho!</string>
+    <string name="selecione_pais">Selecione um país</string>
+</resources>
