@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="paises_origem">
+        <item>@string/selecione_pais</item>
+        <item>@string/pais_brasil</item>
+        <item>@string/pais_franca</item>
+        <item>@string/pais_italia</item>
+        <item>@string/pais_espanha</item>
+        <item>@string/pais_portugal</item>
+        <item>@string/pais_argentina</item>
+        <item>@string/pais_chile</item>
+        <item>@string/pais_estados_unidos</item>
+        <item>@string/pais_alemanha</item>
+        <item>@string/pais_australia</item>
+    </string-array>
+</resources>

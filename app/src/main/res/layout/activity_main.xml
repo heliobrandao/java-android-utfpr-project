@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
@@ -18,35 +17,39 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cadastro de Vinho"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textAlignment="center"
             android:layout_marginBottom="24dp"
-            android:textColor="@color/purple_700" />
+            android:text="@string/cadastro_vinho"
+            android:textAlignment="center"
+            android:textColor="@color/purple_700"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <!-- Nome do Vinho -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nome do Vinho:"
+            android:layout_marginTop="8dp"
+            android:labelFor="@id/editTextNomeVinho"
+            android:text="@string/nome_do_vinho"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/editTextNomeVinho"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginBottom="16dp"
-            android:hint="Digite o nome do vinho"
-            android:inputType="text" />
+            android:hint="@string/digite_o_nome_do_vinho"
+            android:inputType="text"
+            android:autofillHints="@string/digite_o_nome_do_vinho"
+            android:importantForAutofill="yes" />
 
         <!-- Safra -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Safra:"
+            android:labelFor="@id/editTextSafra"
+            android:text="@string/safra_lb"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -55,14 +58,17 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginBottom="16dp"
-            android:hint="Ex: 2020"
-            android:inputType="number" />
+            android:hint="@string/hint_safra"
+            android:inputType="number"
+            android:autofillHints="@string/hint_safra"
+            android:importantForAutofill="yes" />
 
         <!-- País de Origem -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="País de Origem:"
+            android:labelFor="@id/spinnerPais"
+            android:text="@string/pais_de_origem"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -71,16 +77,18 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginBottom="16dp"
+            android:entries="@array/paises_origem"
             android:spinnerMode="dialog" />
 
         <!-- Tipo de Vinho -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tipo de Vinho:"
+            android:layout_marginBottom="8dp"
+            android:labelFor="@id/radioGroupTipo"
+            android:text="@string/tipo_de_vinho"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:textStyle="bold" />
 
         <RadioGroup
             android:id="@+id/radioGroupTipo"
@@ -92,25 +100,25 @@
                 android:id="@+id/radioTinto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tinto" />
+                android:text="@string/tipo_tinto" />
 
             <RadioButton
                 android:id="@+id/radioBranco"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Branco" />
+                android:text="@string/tipo_branco" />
 
             <RadioButton
                 android:id="@+id/radioRose"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Rosé" />
+                android:text="@string/tipo_rose" />
 
             <RadioButton
                 android:id="@+id/radioEspumante"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Espumante" />
+                android:text="@string/tipo_espumante" />
 
         </RadioGroup>
 
@@ -118,41 +126,41 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Características:"
+            android:layout_marginBottom="8dp"
+            android:text="@string/caracteristicas_lb"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:textStyle="bold" />
 
         <CheckBox
             android:id="@+id/checkBoxSeco"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Seco" />
+            android:text="@string/caracteristica_seco" />
 
         <CheckBox
             android:id="@+id/checkBoxDoce"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Doce" />
+            android:text="@string/caracteristica_doce" />
 
         <CheckBox
             android:id="@+id/checkBoxFrutado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Frutado" />
+            android:text="@string/caracteristica_frutado" />
 
         <CheckBox
             android:id="@+id/checkBoxTanico"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tânico"
+            android:text="@string/caracteristica_tanico"
             android:layout_marginBottom="16dp" />
 
         <!-- Comentários -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Comentários:"
+            android:text="@string/comentarios_lb"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -160,11 +168,13 @@
             android:id="@+id/editTextComentarios"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Suas impressões sobre o vinho"
+            android:hint="@string/hint_comentarios"
             android:inputType="textMultiLine"
             android:lines="3"
             android:gravity="top"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="24dp"
+            android:autofillHints="@string/hint_comentarios"
+            android:importantForAutofill="yes" />
 
         <!-- Botões -->
         <LinearLayout
@@ -179,18 +189,20 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Limpar"
+                android:text="@string/botao_limpar"
                 android:layout_marginEnd="8dp"
-                android:backgroundTint="@color/design_default_color_error" />
+                android:backgroundTint="@color/button_gray"
+                android:textColor="@android:color/black" />
 
             <Button
                 android:id="@+id/buttonSalvar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Salvar"
+                android:text="@string/botao_salvar"
                 android:layout_marginStart="8dp"
-                android:backgroundTint="@color/purple_700" />
+                android:backgroundTint="@color/button_purple_light"
+                android:textColor="@android:color/black" />
 
         </LinearLayout>
 
