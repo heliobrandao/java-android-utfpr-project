@@ -9,4 +9,13 @@
     <!-- Cores personalizadas para os botões -->
     <color name="button_gray">#FF9E9E9E</color>
     <color name="button_purple_light">#FFBA68C8</color>
+
+    <!-- Cores escuras para tema noturno -->
+    <color name="background_dark">#FF18122B</color>
+    <color name="surface_dark">#FF23203A</color>
+    <color name="on_background_dark">#FFFFFFFF</color>
+    <color name="on_surface_dark">#FFD4AF37</color>
+
+    <color name="ic_launcher_background">#FFFFFF</color>
+
 </resources>

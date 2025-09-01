@@ -1,12 +1,14 @@
 package br.edu.utfpr.heliobrandao.viniveritas;
 
 import android.os.Bundle;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,41 +16,54 @@ import java.util.List;
 
 public class VinhosActivity extends AppCompatActivity {
 
-    private ListView listViewVinhos;
-    private VinhoAdapter vinhoAdapter;
-    private ArrayList<Vinho> listaVinhos;
+    private RecyclerView recyclerViewVinhos;
+    private RecyclerView.LayoutManager layoutManager;
+    private VinhoRecyclerViewAdapter vinhoRecyclerViewAdapter;
+    private VinhoRecyclerViewAdapter.OnItemClickListener onItemClickListener;
+
+    private List<Vinho> listaVinhos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vinhos);
 
-        // Inicializar a ListView
-        listViewVinhos = findViewById(R.id.listViewVinhos);
+        recyclerViewVinhos = findViewById(R.id.recyclerViewVinhos);
 
-        // Carregar os dados dos vinhos
-        carregarDadosVinhos();
+        layoutManager = new LinearLayoutManager(this);
 
-        // Configurar o adapter
-        vinhoAdapter = new VinhoAdapter(this, listaVinhos);
-        listViewVinhos.setAdapter(vinhoAdapter);
+        recyclerViewVinhos.setLayoutManager(layoutManager);
+        recyclerViewVinhos.setHasFixedSize(true);
+        recyclerViewVinhos.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
-        // Configurar o clique nos itens da lista
-        listViewVinhos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        onItemClickListener = new VinhoRecyclerViewAdapter.OnItemClickListener() {
+
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Vinho vinhoClicado = listaVinhos.get(position);
-                String mensagem = "Vinho selecionado: " + vinhoClicado.getNome() +
-                                " (Safra " + vinhoClicado.getSafra() + ")";
-                Toast.makeText(VinhosActivity.this, mensagem, Toast.LENGTH_LONG).show();
+            public void onItemClick(View view, int position) {
+
+                Vinho vinho = listaVinhos.get(position);
+
+                Toast.makeText(getApplicationContext(),
+                        "Vinho selecionado: " + vinho.getNome() + " (Safra " + vinho.getSafra() + ")",
+                        Toast.LENGTH_LONG).show();
             }
-        });
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+                Vinho vinho = listaVinhos.get(position);
+
+                Toast.makeText(getApplicationContext(),
+                        "Vinho " + vinho.getNome() + " recebeu um clique longo",
+                        Toast.LENGTH_LONG).show();
+            }
+        };
+
+        carregarDadosVinhos();
     }
 
     private void carregarDadosVinhos() {
-        listaVinhos = new ArrayList<>();
 
-        // Obter os arrays de recursos
         String[] nomes = getResources().getStringArray(R.array.nomes_vinhos);
         String[] safras = getResources().getStringArray(R.array.safras_vinhos);
         String[] paises = getResources().getStringArray(R.array.paises_vinhos);
@@ -56,25 +71,33 @@ public class VinhosActivity extends AppCompatActivity {
         String[] caracteristicasArray = getResources().getStringArray(R.array.caracteristicas_vinhos);
         String[] comentarios = getResources().getStringArray(R.array.comentarios_vinhos);
 
-        // Criar objetos Vinho com os dados dos arrays
-        for (int i = 0; i < nomes.length; i++) {
-            String nome = nomes[i];
-            int safra = Integer.parseInt(safras[i]);
-            String pais = paises[i];
-            Vinho.Tipo tipo = Vinho.Tipo.valueOf(tipos[i]);
+        listaVinhos = new ArrayList<>();
 
-            // Processar características (separadas por |)
+        Vinho vinho;
+
+        for (int cont = 0; cont < nomes.length; cont++) {
+
+            String nome = nomes[cont];
+            int safra = Integer.parseInt(safras[cont]);
+            String pais = paises[cont];
+            Vinho.Tipo tipo = Vinho.Tipo.valueOf(tipos[cont]);
+
+            // Processa caracteristicas e separa por |
             List<String> caracteristicas = new ArrayList<>();
-            if (caracteristicasArray[i] != null && !caracteristicasArray[i].isEmpty()) {
-                String[] caracs = caracteristicasArray[i].split("\\|");
+            if (caracteristicasArray[cont] != null && !caracteristicasArray[cont].isEmpty()) {
+                String[] caracs = caracteristicasArray[cont].split("\\|");
                 caracteristicas = Arrays.asList(caracs);
             }
 
-            String comentario = comentarios[i];
+            String comentario = comentarios[cont];
 
-            // Criar e adicionar o vinho à lista
-            Vinho vinho = new Vinho(nome, safra, pais, tipo, caracteristicas, comentario);
+            vinho = new Vinho(nome, safra, pais, tipo, caracteristicas, comentario);
+
             listaVinhos.add(vinho);
         }
+
+        vinhoRecyclerViewAdapter = new VinhoRecyclerViewAdapter(this, listaVinhos, onItemClickListener);
+
+        recyclerViewVinhos.setAdapter(vinhoRecyclerViewAdapter);
     }
 }
