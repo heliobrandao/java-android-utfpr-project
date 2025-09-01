@@ -1,5 +1,6 @@
 package br.edu.utfpr.heliobrandao.viniveritas;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -22,6 +23,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String KEY_VINHO_NOME = "KEY_VINHO_NOME";
+    public static final String KEY_VINHO_TIPO_VINHO = "KEY_VINHO_TIPO_VINHO";
+    public static final String KEY_SAFRA = "KEY_SAFRA";
+    public static final String KEY_PAIS = "KEY_PAIS";
+    public static final String KEY_CARACTERISTICAS = "KEY_CARACTERISTICAS";
+    public static final String KEY_COMENTARIOS = "KEY_COMENTARIOS";
     private EditText editTextNomeVinho;
     private EditText editTextSafra;
     private EditText editTextComentarios;
@@ -44,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        setTitle(getString(R.string.novo_vinho));
 
         inicializarComponentes();
         configurarBotoes();
@@ -158,11 +167,22 @@ public class MainActivity extends AppCompatActivity {
             mensagem.append("\n").append(getString(R.string.vinho_dados_comentarios)).append(comentarios);
         }
 
+        Intent intentResposta = new Intent();
+        intentResposta.putExtra(KEY_VINHO_NOME, nomeVinho);
+        intentResposta.putExtra(KEY_SAFRA, safra);
+        intentResposta.putExtra(KEY_PAIS, paisSelecionado);
+        intentResposta.putExtra(KEY_VINHO_TIPO_VINHO, tipoVinho);
+        intentResposta.putStringArrayListExtra(KEY_CARACTERISTICAS, (ArrayList<String>) caracteristicas);
+        intentResposta.putExtra(KEY_COMENTARIOS, comentarios);
+
+        setResult(MainActivity.RESULT_OK, intentResposta);
+        finish();
+
         //aqui demos preferencia em apenas mostrar o nome do vinho e o tipo do vinho ao salvar
-        String toastMessage = getString(R.string.vinho_salvo_prefixo) + nomeVinho + " (" + tipoVinho + ")";
-        Toast.makeText(
-                this,
-                toastMessage,
-                Toast.LENGTH_LONG).show();
+//        String toastMessage = getString(R.string.vinho_salvo_prefixo) + nomeVinho + " (" + tipoVinho + ")";
+//        Toast.makeText(
+//                this,
+//                toastMessage,
+//                Toast.LENGTH_LONG).show();
     }
 }

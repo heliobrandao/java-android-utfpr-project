@@ -5,13 +5,6 @@ import java.util.List;
 
 public class Vinho {
 
-    public enum Tipo {
-        TINTO,
-        BRANCO,
-        ROSE,
-        ESPUMANTE
-    }
-
     private String nome;
     private int safra;
     private String pais;
