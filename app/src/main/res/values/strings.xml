@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Vini Veritas</string>
+    <!--    <string name="app_name">Vini Veritas</string>-->
+    <string name="app_name">ThemeStylesIcons</string>
     <string name="titulo_cadastro">Cadastro de Vinho</string>
     <string name="nome_vinho">Nome do Vinho:</string>
     <string name="safra">Safra:</string>
@@ -51,4 +52,17 @@
     <string name="vinho_dados_tipo">Tipo: </string>
     <string name="vinho_dados_caracteristicas">Características: </string>
     <string name="vinho_dados_comentarios">Comentários: </string>
+    <string name="logo_utfpr">Logo UTFPR</string>
+    <string name="descricao">App Vini Veritas - Experiências pessoais de Vinhos</string>
+    <string name="autor">Desenvolvedor: Hélio Serrano Brandão Junior</string>
+    <string name="sobre">Sobre</string>
+    <string name="nome">Nome:</string>
+    <string name="safra_rotulo">Safra:</string>
+    <string name="pais">País:</string>
+    <string name="tipo">Tipo:</string>
+    <string name="caracteristicas_rotulo">Caracteristicas:</string>
+    <string name="comentarios_rotulo">Comentários:</string>
+    <string name="cat_logo_de_vinhos">Catálogo de Vinhos</string>
+    <string name="adicionar">Adicionar</string>
+    <string name="novo_vinho">Novo Vinho</string>
 </resources>

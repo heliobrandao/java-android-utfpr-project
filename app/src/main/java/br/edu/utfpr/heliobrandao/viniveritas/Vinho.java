@@ -1,28 +1,27 @@
 package br.edu.utfpr.heliobrandao.viniveritas;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Vinho {
 
-    public enum Tipo {
-        TINTO,
-        BRANCO,
-        ROSE,
-        ESPUMANTE
-    }
-
     private String nome;
-    private int ano;
+    private int safra;
+    private String pais;
     private Tipo tipo;
-    private String uva;
-    private String vinicola;
+    private List<String> caracteristicas;
+    private String comentarios;
 
-    public Vinho(String nome, int ano, Tipo tipo, String uva, String vinicola) {
+    public Vinho(String nome, int safra, String pais, Tipo tipo, List<String> caracteristicas, String comentarios) {
         this.nome = nome;
-        this.ano = ano;
+        this.safra = safra;
+        this.pais = pais;
         this.tipo = tipo;
-        this.uva = uva;
-        this.vinicola = vinicola;
+        this.caracteristicas = caracteristicas != null ? caracteristicas : new ArrayList<>();
+        this.comentarios = comentarios;
     }
 
+    // Getters e Setters
     public String getNome() {
         return nome;
     }
@@ -31,12 +30,20 @@ public class Vinho {
         this.nome = nome;
     }
 
-    public int getAno() {
-        return ano;
+    public int getSafra() {
+        return safra;
     }
 
-    public void setAno(int ano) {
-        this.ano = ano;
+    public void setSafra(int safra) {
+        this.safra = safra;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
     }
 
     public Tipo getTipo() {
@@ -47,25 +54,31 @@ public class Vinho {
         this.tipo = tipo;
     }
 
-    public String getUva() {
-        return uva;
+    public List<String> getCaracteristicas() {
+        return caracteristicas;
     }
 
-    public void setUva(String uva) {
-        this.uva = uva;
+    public void setCaracteristicas(List<String> caracteristicas) {
+        this.caracteristicas = caracteristicas != null ? caracteristicas : new ArrayList<>();
     }
 
-    public String getVinicola() {
-        return vinicola;
+    public String getComentarios() {
+        return comentarios;
     }
 
-    public void setVinicola(String vinicola) {
-        this.vinicola = vinicola;
+    public void setComentarios(String comentarios) {
+        this.comentarios = comentarios;
+    }
+
+    public String getCaracteristicasTexto() {
+        if (caracteristicas == null || caracteristicas.isEmpty()) {
+            return "Nenhuma característica";
+        }
+        return String.join(", ", caracteristicas);
     }
 
     @Override
     public String toString() {
-        return getNome() + " (" + getAno() + ")";
+        return getNome() + " (" + getSafra() + ")";
     }
 }
-

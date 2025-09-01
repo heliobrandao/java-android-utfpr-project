@@ -1,5 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string-array name="nomes_vinhos">
+        <item>Catena Zapata Malbec</item>
+        <item>Alma Negra M Blend</item>
+        <item>El Enemigo Cabernet Franc</item>
+        <item>Pêra-Manca Tinto</item>
+        <item>Esporão Reserva</item>
+        <item>Vinha do Mouro</item>
+        <item>Casillero del Diablo</item>
+        <item>Don Melchor</item>
+        <item>Sandalford Chardonnay</item>
+        <item>Penfolds Bin 28 Kalimna Shiraz</item>
+    </string-array>
+
+    <string-array name="safras_vinhos">
+        <item>2018</item>
+        <item>2020</item>
+        <item>2019</item>
+        <item>2015</item>
+        <item>2017</item>
+        <item>2021</item>
+        <item>2022</item>
+        <item>2016</item>
+        <item>2021</item>
+        <item>2019</item>
+    </string-array>
+
+    <string-array name="paises_vinhos">
+        <item>Argentina</item>
+        <item>Argentina</item>
+        <item>Argentina</item>
+        <item>Portugal</item>
+        <item>Portugal</item>
+        <item>Portugal</item>
+        <item>Chile</item>
+        <item>Chile</item>
+        <item>Austrália</item>
+        <item>Austrália</item>
+    </string-array>
+
+    <string-array name="tipos_vinhos">
+        <item>TINTO</item>
+        <item>TINTO</item>
+        <item>TINTO</item>
+        <item>TINTO</item>
+        <item>TINTO</item>
+        <item>TINTO</item>
+        <item>TINTO</item>
+        <item>TINTO</item>
+        <item>BRANCO</item>
+        <item>TINTO</item>
+    </string-array>
+
+    <string-array name="caracteristicas_vinhos">
+        <item>Seco</item>
+        <item>Seco|Frutado</item>
+        <item>Seco|Frutado</item>
+        <item>Seco|Tânico</item>
+        <item>Seco|Frutado</item>
+        <item>Seco</item>
+        <item>Seco|Frutado</item>
+        <item>Seco|Frutado</item>
+        <item>Seco|Frutado</item>
+        <item>Seco</item>
+    </string-array>
+
+    <string-array name="comentarios_vinhos">
+        <item>Excelente vinho argentino com notas de frutas vermelhas.</item>
+        <item>Blend único com personalidade marcante.</item>
+        <item>Vinho elegante com taninos sedosos.</item>
+        <item>Grande vinho português com estrutura complexa.</item>
+        <item>Reserva especial com grande potencial de guarda.</item>
+        <item>Vinho tradicional do Alentejo com caráter único.</item>
+        <item>Vinho chileno de excelente custo-benefício.</item>
+        <item>Ícone chileno de altíssima qualidade.</item>
+        <item>Chardonnay premium de Perth com notas minerais.</item>
+        <item>Shiraz icônico australiano com notas de especiarias.</item>
+    </string-array>
+
     <string-array name="paises_origem">
         <item>@string/selecione_pais</item>
         <item>@string/pais_brasil</item>
