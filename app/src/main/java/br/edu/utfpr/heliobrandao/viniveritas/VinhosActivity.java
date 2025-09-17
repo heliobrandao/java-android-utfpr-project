@@ -2,6 +2,8 @@ package br.edu.utfpr.heliobrandao.viniveritas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -10,6 +12,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -112,7 +115,7 @@ public class VinhosActivity extends AppCompatActivity {
         recyclerViewVinhos.setAdapter(vinhoRecyclerViewAdapter);
     }
 
-    public void abrirSobre(View view) {
+    public void abrirSobre() {
 
         Intent intentAbertura = new Intent(this, SobreActivity.class);
         startActivity(intentAbertura);
@@ -146,10 +149,30 @@ public class VinhosActivity extends AppCompatActivity {
 
                 }
             }});
-    public void abrirNovoVinho(View view) {
+    public void abrirNovoVinho() {
 
         Intent intentAbertura = new Intent(this, MainActivity.class);
         laucherNovoVinho.launch(intentAbertura);
 
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.vinhos_opcoes, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int idMenuItem = item.getItemId();
+        if (idMenuItem == R.id.menuItemAdicionar) {
+            abrirNovoVinho();
+            return true;
+        }else
+            if (idMenuItem == R.id.menuItemSobre) {
+                abrirSobre();
+                return true;
+            }else{
+                return super.onOptionsItemSelected(item);
+            }
     }
 }
