@@ -182,29 +182,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginTop="16dp">
-
-            <Button
-                android:id="@+id/buttonLimpar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/botao_limpar"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="@color/button_gray"
-                android:textColor="@android:color/black" />
-
-            <Button
-                android:id="@+id/buttonSalvar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/botao_salvar"
-                android:layout_marginStart="8dp"
-                android:backgroundTint="@color/button_purple_light"
-                android:textColor="@android:color/black" />
-
-        </LinearLayout>
+            android:layout_marginTop="16dp"/>
 
     </LinearLayout>
 

@@ -2,6 +2,8 @@ package br.edu.utfpr.heliobrandao.viniveritas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -13,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -55,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         setTitle(getString(R.string.novo_vinho));
 
         inicializarComponentes();
-        configurarBotoes();
+//        configurarBotoes();
     }
 
     private void inicializarComponentes() {
@@ -68,14 +71,14 @@ public class MainActivity extends AppCompatActivity {
         checkBoxDoce = findViewById(R.id.checkBoxDoce);
         checkBoxFrutado = findViewById(R.id.checkBoxFrutado);
         checkBoxTanico = findViewById(R.id.checkBoxTanico);
-        buttonLimpar = findViewById(R.id.buttonLimpar);
-        buttonSalvar = findViewById(R.id.buttonSalvar);
+//        buttonLimpar = findViewById(R.id.buttonLimpar);
+//        buttonSalvar = findViewById(R.id.buttonSalvar);
     }
 
-    private void configurarBotoes() {
-        buttonLimpar.setOnClickListener(v -> limparFormulario());
-        buttonSalvar.setOnClickListener(v -> salvarFormulario());
-    }
+//    private void configurarBotoes() {
+//        buttonLimpar.setOnClickListener(v -> limparFormulario());
+//        buttonSalvar.setOnClickListener(v -> salvarFormulario());
+//    }
 
     private void limparFormulario() {
         editTextNomeVinho.setText("");
@@ -177,12 +180,26 @@ public class MainActivity extends AppCompatActivity {
 
         setResult(MainActivity.RESULT_OK, intentResposta);
         finish();
+    }
 
-        //aqui demos preferencia em apenas mostrar o nome do vinho e o tipo do vinho ao salvar
-//        String toastMessage = getString(R.string.vinho_salvo_prefixo) + nomeVinho + " (" + tipoVinho + ")";
-//        Toast.makeText(
-//                this,
-//                toastMessage,
-//                Toast.LENGTH_LONG).show();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.vinho_opcoes, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int idMenuItem = item.getItemId();
+
+        if (idMenuItem == R.id.menuItemSalvar) {
+            salvarFormulario();
+            return true;
+        }else
+            if (idMenuItem == R.id.menuItemLimpar) {
+                limparFormulario();
+                return true;
+            }
+        return super.onOptionsItemSelected(item);
     }
 }
