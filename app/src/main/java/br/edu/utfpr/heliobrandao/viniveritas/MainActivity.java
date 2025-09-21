@@ -1,6 +1,8 @@
 package br.edu.utfpr.heliobrandao.viniveritas;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String KEY_CARACTERISTICAS = "KEY_CARACTERISTICAS";
     public static final String KEY_COMENTARIOS = "KEY_COMENTARIOS";
     public static final String KEY_MODO = "MODO";
+    public final String KEY_SUGERIR_PAIS = "SUGERIR_PAIS";
+    public final String KEY_ULTIMO_PAIS_SELECIONADO = "ULTIMO_PAIS_SELECIONADO";
     public static final int MODO_NOVO = 0;
     public static final int MODO_EDITAR = 1;
     private EditText editTextNomeVinho;
@@ -40,16 +44,12 @@ public class MainActivity extends AppCompatActivity {
     private EditText editTextComentarios;
     private Spinner spinnerPais;
     private RadioGroup radioGroupTipo;
-    private RadioButton radioButtonTinto;
-    private RadioButton radioButtonBranco;
-    private RadioButton radioButtonRose;
-    private RadioButton radioButtonEspumante;
-    private CheckBox checkBoxSeco;
-    private CheckBox checkBoxDoce;
-    private CheckBox checkBoxFrutado;
-    private CheckBox checkBoxTanico;
-
+    private RadioButton radioButtonTinto, radioButtonBranco, radioButtonRose, radioButtonEspumante;
+    private CheckBox checkBoxSeco, checkBoxDoce, checkBoxFrutado, checkBoxTanico;
     private int modo;
+
+    private boolean sugerirPais = false;
+    private int ultimoPaisSelecionado = 0;
 
 
     @Override
@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
         radioButtonRose = findViewById(R.id.radioRose);
         radioButtonEspumante = findViewById(R.id.radioEspumante);
 
+        lerPreferencias();
+
         Intent intentAbertura = getIntent();
         Bundle bundle = intentAbertura.getExtras();
 
@@ -90,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
 
             if (modo == MODO_NOVO){
                 setTitle(getString(R.string.novo_vinho));
+                if (sugerirPais) {
+                    spinnerPais.setSelection(ultimoPaisSelecionado);
+                }
             } else {
                 setTitle(getString(R.string.editar_vinho));
                 String nome = bundle.getString(KEY_VINHO_NOME);
@@ -225,6 +230,8 @@ public class MainActivity extends AppCompatActivity {
             mensagem.append("\n").append(getString(R.string.vinho_dados_comentarios)).append(comentarios);
         }
 
+        salvarUltimoPaisSelecionado(spinnerPais.getSelectedItemPosition());
+
         Intent intentResposta = new Intent();
         intentResposta.putExtra(KEY_VINHO_NOME, nomeVinho);
         intentResposta.putExtra(KEY_SAFRA, safra);
@@ -244,6 +251,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        MenuItem itemSugerirPais = menu.findItem(R.id.menuItemSugerirPais);
+        itemSugerirPais.setChecked(sugerirPais);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int idMenuItem = item.getItemId();
 
@@ -254,7 +269,47 @@ public class MainActivity extends AppCompatActivity {
             if (idMenuItem == R.id.menuItemLimpar) {
                 limparFormulario();
                 return true;
-            }
-        return super.onOptionsItemSelected(item);
+            }else
+                if (idMenuItem == R.id.menuItemSugerirPais) {
+                    boolean valor = !item.isChecked();
+
+                    salvarSugerirPais(valor);
+                    item.setChecked(valor);
+
+                    if (sugerirPais){
+                        spinnerPais.setSelection(ultimoPaisSelecionado);
+                    }
+
+                    return true;
+                }else{
+                    return super.onOptionsItemSelected(item);
+                }
+    }
+
+    private void lerPreferencias() {
+        SharedPreferences shared = getSharedPreferences(VinhosActivity.ARQUIVO_PREFERENCIAS, Context.MODE_PRIVATE);
+
+        sugerirPais = shared.getBoolean(KEY_SUGERIR_PAIS, sugerirPais);
+        ultimoPaisSelecionado = shared.getInt(KEY_ULTIMO_PAIS_SELECIONADO, ultimoPaisSelecionado);
+    }
+
+    private void salvarSugerirPais(boolean novoValor) {
+        SharedPreferences shared = getSharedPreferences(VinhosActivity.ARQUIVO_PREFERENCIAS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = shared.edit();
+
+        editor.putBoolean(KEY_SUGERIR_PAIS, novoValor);
+        editor.commit();
+
+        sugerirPais = novoValor;
+    }
+
+    private void salvarUltimoPaisSelecionado(int novoValor) {
+        SharedPreferences shared = getSharedPreferences(VinhosActivity.ARQUIVO_PREFERENCIAS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = shared.edit();
+
+        editor.putInt(KEY_ULTIMO_PAIS_SELECIONADO, novoValor);
+        editor.commit();
+
+        ultimoPaisSelecionado = novoValor;
     }
 }

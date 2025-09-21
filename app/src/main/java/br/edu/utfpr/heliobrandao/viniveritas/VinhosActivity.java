@@ -34,6 +34,7 @@ public class VinhosActivity extends AppCompatActivity {
     private VinhoRecyclerViewAdapter vinhoRecyclerViewAdapter;
     private List<Vinho> listaVinhos;
     private int posicaoVinhoSelecionado = -1;
+    public static final String ARQUIVO_PREFERENCIAS = "br.edu.utfpr.heliobrandao.viniveritas.PREFERENCIAS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
