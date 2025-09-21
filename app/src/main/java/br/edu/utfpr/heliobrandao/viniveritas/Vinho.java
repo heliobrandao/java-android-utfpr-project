@@ -12,6 +12,13 @@ public class Vinho {
             return v1.getNome().compareToIgnoreCase(v2.getNome());
         }
     };
+
+    public static Comparator<Vinho> ordenacaoDecrescente = new Comparator<Vinho>() {
+        @Override
+        public int compare(Vinho v1, Vinho v2) {
+            return -1 * v1.getNome().compareToIgnoreCase(v2.getNome());
+        }
+    };
     private String nome;
     private int safra;
     private String pais;

@@ -69,4 +69,7 @@
     <string name="excluir">Excluir</string>
     <string name="editar_vinho">Editar Vinho</string>
     <string name="sugerir_pais">Sugerír País</string>
+    <string name="ordenacao">Ordenação</string>
+    <string name="restaurar_padroes">Restaurar Padrões</string>
+    <string name="as_configuracoes_foram_restaurada">As Configurações foram restauradas</string>
 </resources>

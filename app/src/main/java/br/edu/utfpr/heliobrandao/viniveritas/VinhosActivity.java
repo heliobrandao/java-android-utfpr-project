@@ -1,6 +1,8 @@
 package br.edu.utfpr.heliobrandao.viniveritas;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -20,12 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-// Import adicionado para o Enum Tipo
-import br.edu.utfpr.heliobrandao.viniveritas.Tipo;
 
 public class VinhosActivity extends AppCompatActivity {
 
@@ -35,6 +33,10 @@ public class VinhosActivity extends AppCompatActivity {
     private List<Vinho> listaVinhos;
     private int posicaoVinhoSelecionado = -1;
     public static final String ARQUIVO_PREFERENCIAS = "br.edu.utfpr.heliobrandao.viniveritas.PREFERENCIAS";
+    public static final boolean DEFAULT_ORDEM_CRESCENTE = true;
+    private boolean ordenacaoCrescente = DEFAULT_ORDEM_CRESCENTE;
+    public static final String KEY_ORDEM_CRESCENTE = "ORDEM_CRESCENTE";
+    private MenuItem menuItemOrdenacao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,7 @@ public class VinhosActivity extends AppCompatActivity {
         recyclerViewVinhos.setHasFixedSize(true);
         recyclerViewVinhos.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
+        lerPreferencias();
         carregarDadosVinhos();
     }
 
@@ -149,9 +152,7 @@ public class VinhosActivity extends AppCompatActivity {
                 vinho.setCaracteristicas(caracteristicas);
                 vinho.setComentarios(comentarios);
 
-                Collections.sort(listaVinhos, Vinho.ordenacaoCrescente);
-
-                vinhoRecyclerViewAdapter.notifyDataSetChanged();
+                ordenarListaVinhos();
             }
         }
         posicaoVinhoSelecionado = -1;
@@ -198,9 +199,7 @@ public class VinhosActivity extends AppCompatActivity {
 
                             listaVinhos.add(vinho);
 
-                            Collections.sort(listaVinhos, Vinho.ordenacaoCrescente);
-
-                            vinhoRecyclerViewAdapter.notifyDataSetChanged();
+                            ordenarListaVinhos();
                         }
 
                 }
@@ -215,6 +214,13 @@ public class VinhosActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.vinhos_opcoes, menu);
+        menuItemOrdenacao = menu.findItem(R.id.menuItemOrdenacao);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        atualizarIconeOrdenacao();
         return true;
     }
 
@@ -228,9 +234,62 @@ public class VinhosActivity extends AppCompatActivity {
             if (idMenuItem == R.id.menuItemSobre) {
                 abrirSobre();
                 return true;
-            }else{
-                return super.onOptionsItemSelected(item);
-            }
+            }else
+                if (idMenuItem == R.id.menuItemOrdenacao) {
+                    salvarPreferencias(!ordenacaoCrescente);
+                    atualizarIconeOrdenacao();
+                    ordenarListaVinhos();
+                    return true;
+                }else
+                    if (idMenuItem == R.id.menuItemRestaurar) {
+                        restaurarPadroes();
+                        atualizarIconeOrdenacao();
+                        ordenarListaVinhos();
+                        Toast.makeText(this, R.string.as_configuracoes_foram_restaurada, Toast.LENGTH_LONG).show();
+                        return true;
+                    }else
+                {
+                    return super.onOptionsItemSelected(item);
+                }
+    }
+
+    private void ordenarListaVinhos() {
+        if (ordenacaoCrescente) {
+            Collections.sort(listaVinhos, Vinho.ordenacaoCrescente);
+        } else {
+            Collections.sort(listaVinhos, Vinho.ordenacaoDecrescente);
+        }
+        vinhoRecyclerViewAdapter.notifyDataSetChanged();
+    }
+
+    private void atualizarIconeOrdenacao() {
+        if (ordenacaoCrescente) {
+            menuItemOrdenacao.setIcon(R.drawable.ic_action_ascending_order);
+        } else {
+            menuItemOrdenacao.setIcon(R.drawable.ic_action_descending_order);
+        }
+    }
+    private void lerPreferencias() {
+        SharedPreferences shared = getSharedPreferences(ARQUIVO_PREFERENCIAS, Context.MODE_PRIVATE);
+        ordenacaoCrescente = shared.getBoolean(KEY_ORDEM_CRESCENTE, ordenacaoCrescente);
+    }
+
+    private void salvarPreferencias(boolean novoEstado) {
+        SharedPreferences shared = getSharedPreferences(ARQUIVO_PREFERENCIAS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = shared.edit();
+        editor.putBoolean(KEY_ORDEM_CRESCENTE, novoEstado);
+        editor.commit();
+        ordenacaoCrescente = novoEstado;
+    }
+
+    private void restaurarPadroes() {
+        SharedPreferences shared = getSharedPreferences(ARQUIVO_PREFERENCIAS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = shared.edit();
+        editor.clear();
+        editor.commit();
+        ordenacaoCrescente = DEFAULT_ORDEM_CRESCENTE;
+        atualizarIconeOrdenacao();
+        ordenarListaVinhos();
     }
 
 }
