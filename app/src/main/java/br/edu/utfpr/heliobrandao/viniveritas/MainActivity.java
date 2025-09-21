@@ -32,17 +32,25 @@ public class MainActivity extends AppCompatActivity {
     public static final String KEY_PAIS = "KEY_PAIS";
     public static final String KEY_CARACTERISTICAS = "KEY_CARACTERISTICAS";
     public static final String KEY_COMENTARIOS = "KEY_COMENTARIOS";
+    public static final String KEY_MODO = "MODO";
+    public static final int MODO_NOVO = 0;
+    public static final int MODO_EDITAR = 1;
     private EditText editTextNomeVinho;
     private EditText editTextSafra;
     private EditText editTextComentarios;
     private Spinner spinnerPais;
     private RadioGroup radioGroupTipo;
+    private RadioButton radioButtonTinto;
+    private RadioButton radioButtonBranco;
+    private RadioButton radioButtonRose;
+    private RadioButton radioButtonEspumante;
     private CheckBox checkBoxSeco;
     private CheckBox checkBoxDoce;
     private CheckBox checkBoxFrutado;
     private CheckBox checkBoxTanico;
-    private Button buttonLimpar;
-    private Button buttonSalvar;
+
+    private int modo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        setTitle(getString(R.string.novo_vinho));
 
         inicializarComponentes();
 //        configurarBotoes();
@@ -71,6 +77,55 @@ public class MainActivity extends AppCompatActivity {
         checkBoxDoce = findViewById(R.id.checkBoxDoce);
         checkBoxFrutado = findViewById(R.id.checkBoxFrutado);
         checkBoxTanico = findViewById(R.id.checkBoxTanico);
+        radioButtonTinto = findViewById(R.id.radioTinto);
+        radioButtonBranco = findViewById(R.id.radioBranco);
+        radioButtonRose = findViewById(R.id.radioRose);
+        radioButtonEspumante = findViewById(R.id.radioEspumante);
+
+        Intent intentAbertura = getIntent();
+        Bundle bundle = intentAbertura.getExtras();
+
+        if (bundle != null) {
+            modo = bundle.getInt(KEY_MODO);
+
+            if (modo == MODO_NOVO){
+                setTitle(getString(R.string.novo_vinho));
+            } else {
+                setTitle(getString(R.string.editar_vinho));
+                String nome = bundle.getString(KEY_VINHO_NOME);
+                String safra = bundle.getString(KEY_SAFRA);
+                String pais = bundle.getString(KEY_PAIS);
+                String tipoString = bundle.getString(KEY_VINHO_TIPO_VINHO);
+                ArrayList<String> caracteristicas = bundle.getStringArrayList(KEY_CARACTERISTICAS);
+                String comentarios = bundle.getString(KEY_COMENTARIOS);
+
+                Tipo tipoVinho = Tipo.valueOf(tipoString);
+
+                editTextNomeVinho.setText(nome);
+                editTextSafra.setText(safra);
+                editTextComentarios.setText(comentarios);
+                spinnerPais.setSelection(((ArrayAdapter)spinnerPais.getAdapter()).getPosition(pais));
+                if (tipoVinho == Tipo.Tinto) {
+                    radioButtonTinto.setChecked(true);
+                } else if (tipoVinho == Tipo.Branco) {
+                    radioButtonBranco.setChecked(true);
+                } else if (tipoVinho == Tipo.Rosé) {
+                    radioButtonRose.setChecked(true);
+                } else if (tipoVinho == Tipo.Espumante) {
+                    radioButtonEspumante.setChecked(true);
+                }
+                checkBoxSeco.setChecked(caracteristicas.contains(getString(R.string.caracteristica_seco)));
+                checkBoxDoce.setChecked(caracteristicas.contains(getString(R.string.caracteristica_doce)));
+                checkBoxFrutado.setChecked(caracteristicas.contains(getString(R.string.caracteristica_frutado)));
+                checkBoxTanico.setChecked(caracteristicas.contains(getString(R.string.caracteristica_tanico)));
+                editTextComentarios.setText(comentarios);
+
+
+
+
+            }
+        }
+
 //        buttonLimpar = findViewById(R.id.buttonLimpar);
 //        buttonSalvar = findViewById(R.id.buttonSalvar);
     }

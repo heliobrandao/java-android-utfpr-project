@@ -65,4 +65,7 @@
     <string name="cat_logo_de_vinhos">Catálogo de Vinhos</string>
     <string name="adicionar">Adicionar</string>
     <string name="novo_vinho">Novo Vinho</string>
+    <string name="editar">Editar</string>
+    <string name="excluir">Excluir</string>
+    <string name="editar_vinho">Editar Vinho</string>
 </resources>

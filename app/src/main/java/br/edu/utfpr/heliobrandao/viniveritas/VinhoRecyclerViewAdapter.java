@@ -1,7 +1,9 @@
 package br.edu.utfpr.heliobrandao.viniveritas;
 
 import android.content.Context;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -14,20 +16,36 @@ import java.util.List;
 public class VinhoRecyclerViewAdapter extends RecyclerView.Adapter<VinhoRecyclerViewAdapter.VinhoHolder> {
 
     private OnItemClickListener onItemClickListener;
-
+    private OnItemLongClickListener onItemLongClickListener;
+    private OnCreateContextMenu onCreateContextMenu;
+    private OnContextMenuClickListener onContextMenuClickListener;
     private Context context;
 
     private List<Vinho> listaVinhos;
 
-    public interface OnItemClickListener {
-
+    interface OnItemClickListener {
         void onItemClick(View view, int position);
+    }
 
+    interface OnItemLongClickListener {
         void onItemLongClick(View view, int position);
     }
 
-    public class VinhoHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    interface OnCreateContextMenu {
+        void onCreateContextMenu  (ContextMenu menu,
+                                    View v,
+                                    ContextMenu.ContextMenuInfo menuInfo,
+                                    int position,
+                                    MenuItem.OnMenuItemClickListener onMenuItemClickListener);
+    }
 
+    interface OnContextMenuClickListener {
+        boolean onContextMenuItemClick(MenuItem item, int position);
+    }
+
+    public class VinhoHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+                                                                        View.OnLongClickListener,
+                                                                        View.OnCreateContextMenuListener {
         public TextView textViewNome;
         public TextView textViewSafra;
         public TextView textViewPais;
@@ -47,41 +65,53 @@ public class VinhoRecyclerViewAdapter extends RecyclerView.Adapter<VinhoRecycler
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
+            itemView.setOnCreateContextMenuListener(this);
         }
 
         @Override
         public void onClick(View v) {
 
             if (onItemClickListener != null){
-
-                int pos = getAdapterPosition();
-
-                if (pos != RecyclerView.NO_POSITION){
-                    onItemClickListener.onItemClick(v, pos);
-                }
+                onItemClickListener.onItemClick(v, getAdapterPosition());
             }
         }
 
         @Override
         public boolean onLongClick(View v) {
 
-            if (onItemClickListener != null){
-
-                int pos = getAdapterPosition();
-
-                if (pos != RecyclerView.NO_POSITION){
-                    onItemClickListener.onItemLongClick(v, pos);
-                    return true;
+            if (onItemLongClickListener != null){
+                onItemLongClickListener.onItemLongClick(v, getAdapterPosition());
+                return true;
                 }
-            }
             return false;
         }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            if(onCreateContextMenu != null){
+                onCreateContextMenu.onCreateContextMenu(menu,
+                                                        v,
+                                                        menuInfo,
+                                                        getAdapterPosition(),
+                                                        onMenuItemClickListener);
+            }
+        }
+        MenuItem.OnMenuItemClickListener onMenuItemClickListener = new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(@NonNull MenuItem item) {
+                if(onContextMenuClickListener != null){
+                    onContextMenuClickListener.onContextMenuItemClick(item, getAdapterPosition());
+                    return true;
+                }
+                return false;
+            }
+        };
+
     }
 
-    public VinhoRecyclerViewAdapter(Context context, List<Vinho> listaVinhos, OnItemClickListener listener) {
+    public VinhoRecyclerViewAdapter(Context context, List<Vinho> listaVinhos) {
         this.context = context;
         this.listaVinhos = listaVinhos;
-        this.onItemClickListener = listener;
     }
 
     @NonNull
@@ -111,5 +141,37 @@ public class VinhoRecyclerViewAdapter extends RecyclerView.Adapter<VinhoRecycler
     @Override
     public int getItemCount() {
         return listaVinhos.size();
+    }
+
+    public OnItemClickListener getOnItemClickListener() {
+        return onItemClickListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public OnItemLongClickListener getOnItemLongClickListener() {
+        return onItemLongClickListener;
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
+        this.onItemLongClickListener = onItemLongClickListener;
+    }
+
+    public OnCreateContextMenu getOnCreateContextMenu() {
+        return onCreateContextMenu;
+    }
+
+    public void setOnCreateContextMenu(OnCreateContextMenu onCreateContextMenu) {
+        this.onCreateContextMenu = onCreateContextMenu;
+    }
+
+    public OnContextMenuClickListener getOnContextMenuClickListener() {
+        return onContextMenuClickListener;
+    }
+
+    public void setOnContextMenuClickListener(OnContextMenuClickListener onContextMenuClickListener) {
+        this.onContextMenuClickListener = onContextMenuClickListener;
     }
 }

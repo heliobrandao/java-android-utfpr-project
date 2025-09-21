@@ -2,6 +2,7 @@ package br.edu.utfpr.heliobrandao.viniveritas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,9 +31,8 @@ public class VinhosActivity extends AppCompatActivity {
     private RecyclerView recyclerViewVinhos;
     private RecyclerView.LayoutManager layoutManager;
     private VinhoRecyclerViewAdapter vinhoRecyclerViewAdapter;
-    private VinhoRecyclerViewAdapter.OnItemClickListener onItemClickListener;
-
     private List<Vinho> listaVinhos;
+    private int posicaoVinhoSelecionado = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,68 +49,55 @@ public class VinhosActivity extends AppCompatActivity {
         recyclerViewVinhos.setHasFixedSize(true);
         recyclerViewVinhos.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
-        onItemClickListener = new VinhoRecyclerViewAdapter.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(View view, int position) {
-
-                Vinho vinho = listaVinhos.get(position);
-
-                Toast.makeText(getApplicationContext(),
-                        "Vinho selecionado: " + vinho.getNome() + " (Safra " + vinho.getSafra() + ")",
-                        Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onItemLongClick(View view, int position) {
-
-                Vinho vinho = listaVinhos.get(position);
-
-                Toast.makeText(getApplicationContext(),
-                        "Vinho " + vinho.getNome() + " recebeu um clique longo",
-                        Toast.LENGTH_LONG).show();
-            }
-        };
-
         carregarDadosVinhos();
     }
 
     private void carregarDadosVinhos() {
 
-//        String[] nomes = getResources().getStringArray(R.array.nomes_vinhos);
-//        String[] safras = getResources().getStringArray(R.array.safras_vinhos);
-//        String[] paises = getResources().getStringArray(R.array.paises_vinhos);
-//        String[] tipos = getResources().getStringArray(R.array.tipos_vinhos);
-//        String[] caracteristicasArray = getResources().getStringArray(R.array.caracteristicas_vinhos);
-//        String[] comentarios = getResources().getStringArray(R.array.comentarios_vinhos);
-
         listaVinhos = new ArrayList<>();
-
         Vinho vinho;
+        vinhoRecyclerViewAdapter = new VinhoRecyclerViewAdapter(this, listaVinhos);
 
-//        for (int cont = 0; cont < nomes.length; cont++) {
-//
-//            String nome = nomes[cont];
-//            int safra = Integer.parseInt(safras[cont]);
-//            String pais = paises[cont];
-//            // Corrigido para usar o Tipo importado
-//            Tipo tipo = Tipo.valueOf(tipos[cont]);
-//
-//            // Processa caracteristicas e separa por |
-//            List<String> caracteristicas = new ArrayList<>();
-//            if (caracteristicasArray[cont] != null && !caracteristicasArray[cont].isEmpty()) {
-//                String[] caracs = caracteristicasArray[cont].split("\\|");
-//                caracteristicas = Arrays.asList(caracs);
-//            }
-//
-//            String comentario = comentarios[cont];
-//
-//            vinho = new Vinho(nome, safra, pais, tipo, caracteristicas, comentario);
-//
-//            listaVinhos.add(vinho);
-//        }
+        vinhoRecyclerViewAdapter.setOnCreateContextMenu(new VinhoRecyclerViewAdapter.OnCreateContextMenu() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu,
+                                            View v,
+                                            ContextMenu.ContextMenuInfo menuInfo,
+                                            int position,
+                                            MenuItem.OnMenuItemClickListener onMenuItemClickListener) {
+                getMenuInflater().inflate(R.menu.vinhos_item_selecionado, menu);
 
-        vinhoRecyclerViewAdapter = new VinhoRecyclerViewAdapter(this, listaVinhos, onItemClickListener);
+                for (int i = 0; i < menu.size(); i++) {
+                    menu.getItem(i).setOnMenuItemClickListener(onMenuItemClickListener);
+                }
+            }
+        });
+
+        vinhoRecyclerViewAdapter.setOnContextMenuClickListener(new VinhoRecyclerViewAdapter.OnContextMenuClickListener() {
+            @Override
+            public boolean onContextMenuItemClick(MenuItem item, int position) {
+
+                int idMenuItem = item.getItemId();
+
+                if (idMenuItem == R.id.menuItemEditar) {
+                    editarVinho(position);
+                    return true;
+                }else
+                    if (idMenuItem == R.id.menuItemExcluir) {
+                        excluirVinho(position);
+                        return true;
+                }else{
+                    return false;
+                }
+            }
+        });
+
+        vinhoRecyclerViewAdapter.setOnItemClickListener(new VinhoRecyclerViewAdapter.OnItemClickListener(){
+            @Override
+            public void onItemClick(View v, int position) {
+                editarVinho(position);
+            }
+        });
 
         recyclerViewVinhos.setAdapter(vinhoRecyclerViewAdapter);
     }
@@ -119,6 +106,67 @@ public class VinhosActivity extends AppCompatActivity {
 
         Intent intentAbertura = new Intent(this, SobreActivity.class);
         startActivity(intentAbertura);
+    }
+
+    private void excluirVinho(int position) {
+        if (position >= 0 && position < listaVinhos.size()) {
+            listaVinhos.remove(position);
+            vinhoRecyclerViewAdapter.notifyItemRemoved(position);
+            Toast.makeText(this, "Vinho excluído", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    ActivityResultLauncher<Intent> laucherEditarVinho = registerForActivityResult(  new ActivityResultContracts.StartActivityForResult(),
+                                                                                    new ActivityResultCallback<ActivityResult>() {
+    @Override
+    public void onActivityResult(ActivityResult result) {
+
+        if(result.getResultCode() == VinhosActivity.RESULT_OK){
+
+            Intent intent = result.getData();
+
+            Bundle bundle = intent.getExtras();
+
+            if (bundle != null) {
+                String nome = bundle.getString(MainActivity.KEY_VINHO_NOME);
+                String safra = bundle.getString(MainActivity.KEY_SAFRA);
+                int safraInt = Integer.parseInt(safra);
+                String pais = bundle.getString(MainActivity.KEY_PAIS);
+                String tipoString = bundle.getString(MainActivity.KEY_VINHO_TIPO_VINHO);
+                ArrayList<String> caracteristicas = bundle.getStringArrayList(MainActivity.KEY_CARACTERISTICAS);
+                String comentarios = bundle.getString(MainActivity.KEY_COMENTARIOS);
+
+                Vinho vinho = listaVinhos.get(posicaoVinhoSelecionado);
+                vinho.setNome(nome);
+                vinho.setSafra(safraInt);
+                vinho.setPais(pais);
+
+                Tipo tipo = Tipo.valueOf(tipoString);
+                vinho.setTipo(tipo);
+
+                vinho.setCaracteristicas(caracteristicas);
+                vinho.setComentarios(comentarios);
+
+                vinhoRecyclerViewAdapter.notifyDataSetChanged();
+            }
+        }
+        posicaoVinhoSelecionado = -1;
+
+    }});
+    private void editarVinho(int position) {
+        posicaoVinhoSelecionado = position;
+        Vinho vinho = listaVinhos.get(posicaoVinhoSelecionado);
+        Intent intentAbertura = new Intent(this, MainActivity.class);
+        intentAbertura.putExtra(MainActivity.KEY_MODO, MainActivity.MODO_EDITAR);
+        intentAbertura.putExtra(MainActivity.KEY_VINHO_NOME, vinho.getNome());
+        intentAbertura.putExtra(MainActivity.KEY_SAFRA, String.valueOf(vinho.getSafra()));
+        intentAbertura.putExtra(MainActivity.KEY_PAIS, vinho.getPais());
+        intentAbertura.putExtra(MainActivity.KEY_VINHO_TIPO_VINHO, vinho.getTipo().toString());
+        intentAbertura.putStringArrayListExtra(MainActivity.KEY_CARACTERISTICAS, (ArrayList<String>) vinho.getCaracteristicas());
+        intentAbertura.putExtra(MainActivity.KEY_COMENTARIOS, vinho.getComentarios());
+
+        laucherEditarVinho.launch(intentAbertura);
+
     }
 
     ActivityResultLauncher<Intent> laucherNovoVinho = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -152,6 +200,7 @@ public class VinhosActivity extends AppCompatActivity {
     public void abrirNovoVinho() {
 
         Intent intentAbertura = new Intent(this, MainActivity.class);
+        intentAbertura.putExtra(MainActivity.KEY_MODO, MainActivity.MODO_NOVO);
         laucherNovoVinho.launch(intentAbertura);
 
     }
@@ -175,4 +224,5 @@ public class VinhosActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
             }
     }
+
 }
