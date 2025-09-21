@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 // Import adicionado para o Enum Tipo
@@ -147,6 +148,8 @@ public class VinhosActivity extends AppCompatActivity {
                 vinho.setCaracteristicas(caracteristicas);
                 vinho.setComentarios(comentarios);
 
+                Collections.sort(listaVinhos, Vinho.ordenacaoCrescente);
+
                 vinhoRecyclerViewAdapter.notifyDataSetChanged();
             }
         }
@@ -191,7 +194,11 @@ public class VinhosActivity extends AppCompatActivity {
 
 
                             Vinho vinho = new Vinho(nome, safraInt, pais, Tipo.valueOf(tipoString), caracteristicas, comentarios);
+
                             listaVinhos.add(vinho);
+
+                            Collections.sort(listaVinhos, Vinho.ordenacaoCrescente);
+
                             vinhoRecyclerViewAdapter.notifyDataSetChanged();
                         }
 
