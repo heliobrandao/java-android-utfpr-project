@@ -14,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -23,6 +24,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,6 +134,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void limparFormulario() {
+
+        final String nomeVinho = editTextNomeVinho.getText().toString().trim();
+        final String safra = editTextSafra.getText().toString().trim();
+        final String comentarios = editTextComentarios.getText().toString().trim();
+        final int paisSelecionado = spinnerPais.getSelectedItemPosition();
+        final int radioSelecionado = radioGroupTipo.getCheckedRadioButtonId();
+        final boolean seco = checkBoxSeco.isChecked();
+        final boolean doce = checkBoxDoce.isChecked();
+        final boolean frutado = checkBoxFrutado.isChecked();
+        final boolean tanico = checkBoxTanico.isChecked();
+
+        final ScrollView scrollView = findViewById(R.id.scrollView);
+        final View viewComFoco = scrollView.findFocus();
+
+        Snackbar snackbar = Snackbar.make(scrollView,
+                                            R.string.formulario_limpo,
+                                            Snackbar.LENGTH_LONG);
         editTextNomeVinho.setText("");
         editTextSafra.setText("");
         editTextComentarios.setText("");
@@ -141,10 +161,36 @@ public class MainActivity extends AppCompatActivity {
         checkBoxFrutado.setChecked(false);
         checkBoxTanico.setChecked(false);
 
-        Toast.makeText(
-                this,
-                getString(R.string.formulario_limpo),
-                Toast.LENGTH_LONG).show();
+        snackbar.setAction(R.string.desfazer, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                editTextNomeVinho.setText(nomeVinho);
+                editTextSafra.setText(safra);
+                editTextComentarios.setText(comentarios);
+                spinnerPais.setSelection(paisSelecionado);
+                if (radioSelecionado == R.id.radioTinto) {
+                    radioButtonTinto.setChecked(true);
+                } else if (radioSelecionado == R.id.radioBranco) {
+                    radioButtonBranco.setChecked(true);
+                } else if (radioSelecionado == R.id.radioRose) {
+                    radioButtonRose.setChecked(true);
+                } else if (radioSelecionado == R.id.radioEspumante) {
+                    radioButtonEspumante.setChecked(true);
+                }
+                checkBoxSeco.setChecked(seco);
+                checkBoxDoce.setChecked(doce);
+                checkBoxFrutado.setChecked(frutado);
+                checkBoxTanico.setChecked(tanico);
+
+                if (viewComFoco != null) {
+                    viewComFoco.requestFocus();
+                } else {
+                    editTextNomeVinho.requestFocus();
+                }
+            }
+        });
+        snackbar.show();
     }
 
     private void salvarFormulario() {

@@ -84,4 +84,7 @@
     <string name="deseja_apagar">Do you want to delete?\n\"%1$s\"</string>
     <string name="vinho_excluído">Wine Deleted</string>
     <string name="deseja_restaurar_padroes_originais">Do you want to restore default settings?</string>
+    <string name="desfazer">Undo</string>
+    <string name="alteracao_realizada">Update Done</string>
+    <string name="erro_tipo_conversao">Type conversion error!</string>
 </resources>

@@ -23,9 +23,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.ViewPropertyAnimatorCompatSet;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -200,7 +203,19 @@ public class VinhosActivity extends AppCompatActivity {
                 ArrayList<String> caracteristicas = bundle.getStringArrayList(MainActivity.KEY_CARACTERISTICAS);
                 String comentarios = bundle.getString(MainActivity.KEY_COMENTARIOS);
 
-                Vinho vinho = listaVinhos.get(posicaoVinhoSelecionado);
+                final Vinho vinho = listaVinhos.get(posicaoVinhoSelecionado);
+
+                final Vinho cloneVinho;
+
+                try {
+                    cloneVinho = (Vinho) vinho.clone();
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                    UtilsAlert.mostrarAviso(VinhosActivity.this,
+                                                    R.string.erro_tipo_conversao);
+                    return;
+                }
+
                 vinho.setNome(nome);
                 vinho.setSafra(safraInt);
                 vinho.setPais(pais);
@@ -212,6 +227,26 @@ public class VinhosActivity extends AppCompatActivity {
                 vinho.setComentarios(comentarios);
 
                 ordenarListaVinhos();
+
+                final ConstraintLayout constraintLayout = findViewById(R.id.main);
+
+                Snackbar snackbar = Snackbar.make(constraintLayout,
+                                                    R.string.alteracao_realizada,
+                                                    Snackbar.LENGTH_LONG);
+
+                snackbar.setAction(R.string.desfazer, new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        listaVinhos.remove(vinho);;
+                        listaVinhos.add(cloneVinho);;
+
+                        ordenarListaVinhos();
+                    }
+
+                });
+
+                snackbar.show();
             }
         }
         posicaoVinhoSelecionado = -1;

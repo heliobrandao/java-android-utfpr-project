@@ -84,5 +84,8 @@
     <string name="deseja_apagar">Deseja realmente apagar?\n\"%1$s\"</string>
     <string name="vinho_excluído">Vinho apagado</string>
     <string name="deseja_restaurar_padroes_originais">Deseja restaurar os padrões?</string>
+    <string name="desfazer">Desfazer</string>
+    <string name="alteracao_realizada">Atualização realizada</string>
+    <string name="erro_tipo_conversao">Erro de conversão de tipos!</string>
 
 </resources>

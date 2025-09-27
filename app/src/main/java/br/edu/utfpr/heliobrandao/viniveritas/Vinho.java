@@ -1,10 +1,12 @@
 package br.edu.utfpr.heliobrandao.viniveritas;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Vinho {
+public class Vinho implements Cloneable{
 
     public static Comparator<Vinho> ordenacaoCrescente = new Comparator<Vinho>() {
         @Override
@@ -89,6 +91,14 @@ public class Vinho {
             return "Nenhuma característica";
         }
         return String.join(", ", caracteristicas);
+    }
+
+    @NonNull
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+
+
+        return super.clone();
     }
 
     @Override
