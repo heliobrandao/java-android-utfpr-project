@@ -13,11 +13,11 @@
         android:title="@string/ordenacao"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menuItemRestaurar"
+        android:title="@string/restaurar_padroes" />
+    <item
         android:id="@+id/menuItemSobre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="@string/sobre" />
-    <item
-        android:id="@+id/menuItemRestaurar"
-        android:title="@string/restaurar_padroes" />
 </menu>

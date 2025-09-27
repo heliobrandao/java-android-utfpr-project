@@ -129,12 +129,18 @@ public class VinhoRecyclerViewAdapter extends RecyclerView.Adapter<VinhoRecycler
 
         Vinho vinho = listaVinhos.get(position);
 
-        holder.textViewNome.setText("Nome: " + vinho.getNome());
-        holder.textViewSafra.setText("Safra: " + String.valueOf(vinho.getSafra()));
-        holder.textViewPais.setText("País: " + vinho.getPais());
-        holder.textViewTipo.setText("Tipo: " + vinho.getTipo().name());
-        holder.textViewCaracteristicas.setText("Características: " + vinho.getCaracteristicasTexto());
-        holder.textViewComentarios.setText("Comentários:\n" +  vinho.getComentarios());
+        holder.textViewNome
+                .setText(context.getString(R.string.nome_do_vinho) + " " + vinho.getNome());
+        holder.textViewSafra
+                .setText(context.getString(R.string.safra) + " " + String.valueOf(vinho.getSafra()));
+        holder.textViewPais
+                .setText(context.getString(R.string.pais_de_origem) + " " + vinho.getPais());
+        holder.textViewTipo
+                .setText(context.getString(R.string.tipo_vinho) + " " + vinho.getTipo().getTraducao(context));
+        holder.textViewCaracteristicas
+                .setText(context.getString(R.string.caracteristicas) + " " + vinho.getCaracteristicasTexto());
+        holder.textViewComentarios
+                .setText(context.getString(R.string.comentarios) + "\n" + vinho.getComentarios());
     }
 
     /* Importante não esquecer de retornar a quantidade de elementos na lista */

@@ -1,6 +1,7 @@
 package br.edu.utfpr.heliobrandao.viniveritas;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import br.edu.utfpr.heliobrandao.viniveritas.utils.UtilsAlert;
+
 public class VinhosActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewVinhos;
@@ -32,6 +36,8 @@ public class VinhosActivity extends AppCompatActivity {
     private VinhoRecyclerViewAdapter vinhoRecyclerViewAdapter;
     private List<Vinho> listaVinhos;
     private int posicaoVinhoSelecionado = -1;
+    private ActionMode actionMode;
+
     public static final String ARQUIVO_PREFERENCIAS = "br.edu.utfpr.heliobrandao.viniveritas.PREFERENCIAS";
     public static final boolean DEFAULT_ORDEM_CRESCENTE = true;
     private boolean ordenacaoCrescente = DEFAULT_ORDEM_CRESCENTE;
@@ -114,11 +120,19 @@ public class VinhosActivity extends AppCompatActivity {
     }
 
     private void excluirVinho(int position) {
-        if (position >= 0 && position < listaVinhos.size()) {
-            listaVinhos.remove(position);
-            vinhoRecyclerViewAdapter.notifyItemRemoved(position);
-            Toast.makeText(this, "Vinho excluído", Toast.LENGTH_SHORT).show();
-        }
+        Vinho vinho = listaVinhos.get(position);
+
+        String mensagem = getString(R.string.deseja_apagar, vinho.getNome());
+
+        DialogInterface.OnClickListener listenerSim = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                listaVinhos.remove(position);
+                vinhoRecyclerViewAdapter.notifyItemRemoved(position);
+                Toast.makeText(VinhosActivity.this, R.string.vinho_excluído, Toast.LENGTH_LONG).show();
+            }
+        };
+        UtilsAlert.confirmarAcao(this, mensagem, listenerSim, null);
     }
 
     ActivityResultLauncher<Intent> laucherEditarVinho = registerForActivityResult(  new ActivityResultContracts.StartActivityForResult(),
@@ -166,7 +180,7 @@ public class VinhosActivity extends AppCompatActivity {
         intentAbertura.putExtra(MainActivity.KEY_VINHO_NOME, vinho.getNome());
         intentAbertura.putExtra(MainActivity.KEY_SAFRA, String.valueOf(vinho.getSafra()));
         intentAbertura.putExtra(MainActivity.KEY_PAIS, vinho.getPais());
-        intentAbertura.putExtra(MainActivity.KEY_VINHO_TIPO_VINHO, vinho.getTipo().toString());
+        intentAbertura.putExtra(MainActivity.KEY_VINHO_TIPO_VINHO, vinho.getTipo().name());
         intentAbertura.putStringArrayListExtra(MainActivity.KEY_CARACTERISTICAS, (ArrayList<String>) vinho.getCaracteristicas());
         intentAbertura.putExtra(MainActivity.KEY_COMENTARIOS, vinho.getComentarios());
 
@@ -242,10 +256,7 @@ public class VinhosActivity extends AppCompatActivity {
                     return true;
                 }else
                     if (idMenuItem == R.id.menuItemRestaurar) {
-                        restaurarPadroes();
-                        atualizarIconeOrdenacao();
-                        ordenarListaVinhos();
-                        Toast.makeText(this, R.string.as_configuracoes_foram_restaurada, Toast.LENGTH_LONG).show();
+                        confirmarRestaurarPadroes();
                         return true;
                     }else
                 {
@@ -280,6 +291,24 @@ public class VinhosActivity extends AppCompatActivity {
         editor.putBoolean(KEY_ORDEM_CRESCENTE, novoEstado);
         editor.commit();
         ordenacaoCrescente = novoEstado;
+    }
+
+    private void confirmarRestaurarPadroes() {
+        String mensagem = getString(R.string.deseja_restaurar_padroes_originais);
+
+        DialogInterface.OnClickListener listenerSim = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                restaurarPadroes();
+                atualizarIconeOrdenacao();
+                ordenarListaVinhos();
+
+                Toast.makeText(VinhosActivity.this,
+                                        R.string.as_configuracoes_foram_restaurada,
+                                        Toast.LENGTH_LONG).show();
+            }
+        };
+        UtilsAlert.confirmarAcao(this, mensagem, listenerSim, null);
     }
 
     private void restaurarPadroes() {

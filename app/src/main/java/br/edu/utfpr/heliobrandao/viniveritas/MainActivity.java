@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import br.edu.utfpr.heliobrandao.viniveritas.utils.UtilsAlert;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         inicializarComponentes();
-//        configurarBotoes();
     }
 
     private void inicializarComponentes() {
@@ -124,21 +126,9 @@ public class MainActivity extends AppCompatActivity {
                 checkBoxFrutado.setChecked(caracteristicas.contains(getString(R.string.caracteristica_frutado)));
                 checkBoxTanico.setChecked(caracteristicas.contains(getString(R.string.caracteristica_tanico)));
                 editTextComentarios.setText(comentarios);
-
-
-
-
             }
         }
-
-//        buttonLimpar = findViewById(R.id.buttonLimpar);
-//        buttonSalvar = findViewById(R.id.buttonSalvar);
     }
-
-//    private void configurarBotoes() {
-//        buttonLimpar.setOnClickListener(v -> limparFormulario());
-//        buttonSalvar.setOnClickListener(v -> salvarFormulario());
-//    }
 
     private void limparFormulario() {
         editTextNomeVinho.setText("");
@@ -162,51 +152,54 @@ public class MainActivity extends AppCompatActivity {
         String safra = editTextSafra.getText().toString().trim();
 
         if (nomeVinho.isEmpty()) {
-            Toast.makeText(
-                    this,
-                    getString(R.string.erro_nome_vazio),
-                    Toast.LENGTH_LONG).show();
+            UtilsAlert.mostrarAviso(this, R.string.erro_nome_vazio);
             editTextNomeVinho.requestFocus();
             return;
         }
 
         if (safra.isEmpty()) {
-            Toast.makeText(
-                    this,
-                    getString(R.string.erro_safra_vazia),
-                    Toast.LENGTH_LONG).show();
+            UtilsAlert.mostrarAviso(this, R.string.erro_safra_vazia);
             editTextSafra.requestFocus();
             return;
         }
 
         if (spinnerPais.getSelectedItemPosition() == 0) {
-            Toast.makeText(
-                    this,
-                    getString(R.string.erro_pais_nao_selecionado),
-                    Toast.LENGTH_LONG).show();
+            UtilsAlert.mostrarAviso(this, R.string.erro_pais_nao_selecionado);
             return;
         }
 
         int radioSelecionado = radioGroupTipo.getCheckedRadioButtonId();
-        if (radioSelecionado == -1) {
-            Toast.makeText(
-                    this,
-                    getString(R.string.erro_tipo_nao_selecionado),
-                    Toast.LENGTH_LONG).show();
+
+
+        Tipo tipoEnum;
+        if (radioSelecionado == R.id.radioTinto) {
+            tipoEnum = Tipo.Tinto;
+        } else if (radioSelecionado == R.id.radioBranco) {
+            tipoEnum = Tipo.Branco;
+        } else if (radioSelecionado == R.id.radioRose) {
+            tipoEnum = Tipo.Rosé;
+        } else if (radioSelecionado == R.id.radioEspumante) {
+            tipoEnum = Tipo.Espumante;
+        } else {
+            Log.d("DEBUG", "Nenhum tipo válido selecionado - ID: " + radioSelecionado);
+
+            UtilsAlert.mostrarAviso(this, R.string.selecione_tipo_vinho);
             return;
         }
 
+
         String paisSelecionado = spinnerPais.getSelectedItem().toString();
 
-        RadioButton radioButtonSelecionado = findViewById(radioSelecionado);
-        String tipoVinho = radioButtonSelecionado.getText().toString();
-
         //aqui criamos uma lista de caracteristicas utilizando ArrayList e checkboxes
+        //sem validacao nesse caso
         List<String> caracteristicas = new ArrayList<>();
         if (checkBoxSeco.isChecked()) caracteristicas.add(getString(R.string.caracteristica_seco));
         if (checkBoxDoce.isChecked()) caracteristicas.add(getString(R.string.caracteristica_doce));
         if (checkBoxFrutado.isChecked()) caracteristicas.add(getString(R.string.caracteristica_frutado));
         if (checkBoxTanico.isChecked()) caracteristicas.add(getString(R.string.caracteristica_tanico));
+        if (caracteristicas.isEmpty()) {
+            caracteristicas.add(getString(R.string.nenhuma_caracteristica_selecionada));
+        }
 
         String comentarios = editTextComentarios.getText().toString().trim();
 
@@ -214,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         mensagem.append(getString(R.string.vinho_dados_nome)).append(nomeVinho).append("\n");
         mensagem.append(getString(R.string.vinho_dados_safra)).append(safra).append("\n");
         mensagem.append(getString(R.string.vinho_dados_pais)).append(paisSelecionado).append("\n");
-        mensagem.append(getString(R.string.vinho_dados_tipo)).append(tipoVinho);
+        mensagem.append(getString(R.string.vinho_dados_tipo)).append(tipoEnum.toString());
 
         if (!caracteristicas.isEmpty()) {
             mensagem.append("\n").append(getString(R.string.vinho_dados_caracteristicas));
@@ -236,7 +229,8 @@ public class MainActivity extends AppCompatActivity {
         intentResposta.putExtra(KEY_VINHO_NOME, nomeVinho);
         intentResposta.putExtra(KEY_SAFRA, safra);
         intentResposta.putExtra(KEY_PAIS, paisSelecionado);
-        intentResposta.putExtra(KEY_VINHO_TIPO_VINHO, tipoVinho);
+//        intentResposta.putExtra(KEY_VINHO_TIPO_VINHO, tipoVinho);
+        intentResposta.putExtra(KEY_VINHO_TIPO_VINHO, tipoEnum.name());
         intentResposta.putStringArrayListExtra(KEY_CARACTERISTICAS, (ArrayList<String>) caracteristicas);
         intentResposta.putExtra(KEY_COMENTARIOS, comentarios);
 

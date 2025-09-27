@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.ThemeStylesIcons" parent="Theme.Material3.Dark">
         <!-- Customize your dark theme here. -->
-        <item name="colorPrimary">@color/purple_700</item>
+        <item name="colorPrimary">#CF85DB</item>
         <item name="colorPrimaryVariant">@color/wine_red</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="android:colorBackground">@color/background_dark</item>
