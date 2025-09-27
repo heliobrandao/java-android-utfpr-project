@@ -6,6 +6,6 @@
         <item name="colorPrimaryVariant">@color/wine_red</item>
         <item name="colorOnPrimary">@color/black</item>
     </style>
-
+    <color name="corSelecionado">@color/purple_tranasparente</color>
 <!--    <style name="Theme.ViniVeritas" parent="Base.Theme.ViniVeritas" />-->
 </resources>

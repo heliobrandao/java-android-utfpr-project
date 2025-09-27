@@ -81,7 +81,7 @@
     <string name="confirmacao">Confirmação</string>
     <string name="sim">Sim</string>
     <string name="nao">Não</string>
-    <string name="deseja_apagar">Deseja realmente apagar?\\n\\\"%1$s\\\"</string>
+    <string name="deseja_apagar">Deseja realmente apagar?\n\"%1$s\"</string>
     <string name="vinho_excluído">Vinho apagado</string>
     <string name="deseja_restaurar_padroes_originais">Deseja restaurar os padrões?</string>
 

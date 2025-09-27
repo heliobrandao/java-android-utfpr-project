@@ -10,4 +10,6 @@
         <item name="colorOnBackground">@color/on_background_dark</item>
         <item name="colorOnSurface">@color/on_surface_dark</item>
     </style>
+
+    <color name="corSelecionado">@color/purple_light_transparente</color>
 </resources>

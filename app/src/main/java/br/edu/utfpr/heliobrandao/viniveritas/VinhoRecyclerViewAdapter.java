@@ -28,7 +28,7 @@ public class VinhoRecyclerViewAdapter extends RecyclerView.Adapter<VinhoRecycler
     }
 
     interface OnItemLongClickListener {
-        void onItemLongClick(View view, int position);
+        boolean onItemLongClick(View view, int position);
     }
 
     interface OnCreateContextMenu {

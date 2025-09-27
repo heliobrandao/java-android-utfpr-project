@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -19,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
+import androidx.appcompat.view.ViewPropertyAnimatorCompatSet;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +41,53 @@ public class VinhosActivity extends AppCompatActivity {
     private List<Vinho> listaVinhos;
     private int posicaoVinhoSelecionado = -1;
     private ActionMode actionMode;
+
+    private View viewSelecionada;
+    private Drawable backgroundDrawable;
+
+
+    private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflate = mode.getMenuInflater();
+            inflate.inflate(R.menu.vinhos_item_selecionado, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            int idMenuItem = item.getItemId();
+
+            if (idMenuItem == R.id.menuItemEditar) {
+                editarVinho();
+                return true;
+            }else
+                if (idMenuItem == R.id.menuItemExcluir) {
+                    excluirVinho();
+                    return true;
+                }else{
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+            if (viewSelecionada != null) {
+                viewSelecionada.setBackground(backgroundDrawable);
+            }
+            actionMode = null;
+            viewSelecionada = null;
+            posicaoVinhoSelecionado = -1;
+
+            recyclerViewVinhos.setEnabled(true);
+        }
+    };
 
     public static final String ARQUIVO_PREFERENCIAS = "br.edu.utfpr.heliobrandao.viniveritas.PREFERENCIAS";
     public static final boolean DEFAULT_ORDEM_CRESCENTE = true;
@@ -69,44 +120,31 @@ public class VinhosActivity extends AppCompatActivity {
         Vinho vinho;
         vinhoRecyclerViewAdapter = new VinhoRecyclerViewAdapter(this, listaVinhos);
 
-        vinhoRecyclerViewAdapter.setOnCreateContextMenu(new VinhoRecyclerViewAdapter.OnCreateContextMenu() {
-            @Override
-            public void onCreateContextMenu(ContextMenu menu,
-                                            View v,
-                                            ContextMenu.ContextMenuInfo menuInfo,
-                                            int position,
-                                            MenuItem.OnMenuItemClickListener onMenuItemClickListener) {
-                getMenuInflater().inflate(R.menu.vinhos_item_selecionado, menu);
-
-                for (int i = 0; i < menu.size(); i++) {
-                    menu.getItem(i).setOnMenuItemClickListener(onMenuItemClickListener);
-                }
-            }
-        });
-
-        vinhoRecyclerViewAdapter.setOnContextMenuClickListener(new VinhoRecyclerViewAdapter.OnContextMenuClickListener() {
-            @Override
-            public boolean onContextMenuItemClick(MenuItem item, int position) {
-
-                int idMenuItem = item.getItemId();
-
-                if (idMenuItem == R.id.menuItemEditar) {
-                    editarVinho(position);
-                    return true;
-                }else
-                    if (idMenuItem == R.id.menuItemExcluir) {
-                        excluirVinho(position);
-                        return true;
-                }else{
-                    return false;
-                }
-            }
-        });
 
         vinhoRecyclerViewAdapter.setOnItemClickListener(new VinhoRecyclerViewAdapter.OnItemClickListener(){
             @Override
             public void onItemClick(View v, int position) {
-                editarVinho(position);
+                editarVinho();
+            }
+        });
+
+        vinhoRecyclerViewAdapter.setOnItemLongClickListener(new VinhoRecyclerViewAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(View v, int position) {
+                if (actionMode != null) {
+                    return false;
+                }
+                posicaoVinhoSelecionado = position;
+                viewSelecionada = v;
+                backgroundDrawable = v.getBackground();
+
+                v.setBackgroundColor(getColor(R.color.corSelecionado));
+
+                recyclerViewVinhos.setEnabled(false);
+
+                actionMode = startSupportActionMode(actionModeCallback);
+
+                return true;
             }
         });
 
@@ -119,17 +157,24 @@ public class VinhosActivity extends AppCompatActivity {
         startActivity(intentAbertura);
     }
 
-    private void excluirVinho(int position) {
-        Vinho vinho = listaVinhos.get(position);
+    private void excluirVinho() {
+        if (posicaoVinhoSelecionado < 0 || posicaoVinhoSelecionado >= listaVinhos.size()) {
+            return; // Posição inválida, não faz nada
+        }
+
+        Vinho vinho = listaVinhos.get(posicaoVinhoSelecionado);
 
         String mensagem = getString(R.string.deseja_apagar, vinho.getNome());
 
         DialogInterface.OnClickListener listenerSim = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                listaVinhos.remove(position);
-                vinhoRecyclerViewAdapter.notifyItemRemoved(position);
+                listaVinhos.remove(posicaoVinhoSelecionado);
+                vinhoRecyclerViewAdapter.notifyItemRemoved(posicaoVinhoSelecionado);
                 Toast.makeText(VinhosActivity.this, R.string.vinho_excluído, Toast.LENGTH_LONG).show();
+                if (actionMode != null) {
+                    actionMode.finish();
+                }
             }
         };
         UtilsAlert.confirmarAcao(this, mensagem, listenerSim, null);
@@ -171,9 +216,12 @@ public class VinhosActivity extends AppCompatActivity {
         }
         posicaoVinhoSelecionado = -1;
 
+        if (actionMode != null) {
+            actionMode.finish();
+        }
+
     }});
-    private void editarVinho(int position) {
-        posicaoVinhoSelecionado = position;
+    private void editarVinho() {
         Vinho vinho = listaVinhos.get(posicaoVinhoSelecionado);
         Intent intentAbertura = new Intent(this, MainActivity.class);
         intentAbertura.putExtra(MainActivity.KEY_MODO, MainActivity.MODO_EDITAR);
