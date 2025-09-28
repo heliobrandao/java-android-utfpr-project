@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--    <string name="app_name">Vini Veritas</string>-->
-    <string name="app_name">ThemeStylesIcons</string>
+    <string name="app_name">Vini Veritas - Catálogo Pessoal de Vinhos</string>
     <string name="titulo_cadastro">Cadastro de Vinho</string>
     <string name="nome_vinho">Nome do Vinho:</string>
     <string name="safra">Safra:</string>
