@@ -9,14 +9,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -30,21 +28,20 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.edu.utfpr.heliobrandao.viniveritas.modelo.Tipo;
+import br.edu.utfpr.heliobrandao.viniveritas.modelo.Vinho;
+import br.edu.utfpr.heliobrandao.viniveritas.persistencia.VinhosDatabase;
 import br.edu.utfpr.heliobrandao.viniveritas.utils.UtilsAlert;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String KEY_VINHO_NOME = "KEY_VINHO_NOME";
-    public static final String KEY_VINHO_TIPO_VINHO = "KEY_VINHO_TIPO_VINHO";
-    public static final String KEY_SAFRA = "KEY_SAFRA";
-    public static final String KEY_PAIS = "KEY_PAIS";
-    public static final String KEY_CARACTERISTICAS = "KEY_CARACTERISTICAS";
-    public static final String KEY_COMENTARIOS = "KEY_COMENTARIOS";
     public static final String KEY_MODO = "MODO";
+    public static final String KEY_ID = "ID";
     public final String KEY_SUGERIR_PAIS = "SUGERIR_PAIS";
     public final String KEY_ULTIMO_PAIS_SELECIONADO = "ULTIMO_PAIS_SELECIONADO";
     public static final int MODO_NOVO = 0;
     public static final int MODO_EDITAR = 1;
+
     private EditText editTextNomeVinho;
     private EditText editTextSafra;
     private EditText editTextComentarios;
@@ -53,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private RadioButton radioButtonTinto, radioButtonBranco, radioButtonRose, radioButtonEspumante;
     private CheckBox checkBoxSeco, checkBoxDoce, checkBoxFrutado, checkBoxTanico;
     private int modo;
-
+    private Vinho vinhoOriginal;
     private boolean sugerirPais = false;
     private int ultimoPaisSelecionado = 0;
 
@@ -102,19 +99,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else {
                 setTitle(getString(R.string.editar_vinho));
-                String nome = bundle.getString(KEY_VINHO_NOME);
-                String safra = bundle.getString(KEY_SAFRA);
-                String pais = bundle.getString(KEY_PAIS);
-                String tipoString = bundle.getString(KEY_VINHO_TIPO_VINHO);
-                ArrayList<String> caracteristicas = bundle.getStringArrayList(KEY_CARACTERISTICAS);
-                String comentarios = bundle.getString(KEY_COMENTARIOS);
 
-                Tipo tipoVinho = Tipo.valueOf(tipoString);
+                long id = bundle.getLong(KEY_ID);
 
-                editTextNomeVinho.setText(nome);
-                editTextSafra.setText(safra);
-                editTextComentarios.setText(comentarios);
-                spinnerPais.setSelection(((ArrayAdapter)spinnerPais.getAdapter()).getPosition(pais));
+                VinhosDatabase database = VinhosDatabase.getInstance(this);
+                vinhoOriginal = database.getVinhoDao().queryForId(id);
+
+
+                editTextNomeVinho.setText(vinhoOriginal.getNome());
+                editTextSafra.setText(String.valueOf(vinhoOriginal.getSafra()));;
+                editTextComentarios.setText(vinhoOriginal.getComentarios());
+
+                spinnerPais.setSelection(((ArrayAdapter)spinnerPais.getAdapter()).getPosition(vinhoOriginal.getPais()));
+
+                Tipo tipoVinho = Tipo.valueOf(vinhoOriginal.getTipo().name());
+
                 if (tipoVinho == Tipo.Tinto) {
                     radioButtonTinto.setChecked(true);
                 } else if (tipoVinho == Tipo.Branco) {
@@ -124,11 +123,16 @@ public class MainActivity extends AppCompatActivity {
                 } else if (tipoVinho == Tipo.Espumante) {
                     radioButtonEspumante.setChecked(true);
                 }
-                checkBoxSeco.setChecked(caracteristicas.contains(getString(R.string.caracteristica_seco)));
-                checkBoxDoce.setChecked(caracteristicas.contains(getString(R.string.caracteristica_doce)));
-                checkBoxFrutado.setChecked(caracteristicas.contains(getString(R.string.caracteristica_frutado)));
-                checkBoxTanico.setChecked(caracteristicas.contains(getString(R.string.caracteristica_tanico)));
-                editTextComentarios.setText(comentarios);
+                checkBoxSeco.setChecked(vinhoOriginal.getCaracteristicas().contains(getString(R.string.caracteristica_seco)));
+                checkBoxDoce.setChecked(vinhoOriginal.getCaracteristicas().contains(getString(R.string.caracteristica_doce)));
+                checkBoxFrutado.setChecked(vinhoOriginal.getCaracteristicas().contains(getString(R.string.caracteristica_frutado)));
+                checkBoxTanico.setChecked(vinhoOriginal.getCaracteristicas().contains(getString(R.string.caracteristica_tanico)));
+
+                editTextComentarios.setText(vinhoOriginal.getComentarios());
+
+                editTextNomeVinho.requestFocus();
+                editTextNomeVinho.setSelection(editTextNomeVinho.getText().length());
+
             }
         }
     }
@@ -269,18 +273,46 @@ public class MainActivity extends AppCompatActivity {
             mensagem.append("\n").append(getString(R.string.vinho_dados_comentarios)).append(comentarios);
         }
 
-        salvarUltimoPaisSelecionado(spinnerPais.getSelectedItemPosition());
+        Vinho vinho = new Vinho(nomeVinho, Integer.parseInt(safra), paisSelecionado, tipoEnum, caracteristicas, comentarios);
+
+        if (vinho.equals(vinhoOriginal)) {
+            setResult(MainActivity.RESULT_CANCELED);
+            finish();
+            return;
+        };
 
         Intent intentResposta = new Intent();
-        intentResposta.putExtra(KEY_VINHO_NOME, nomeVinho);
-        intentResposta.putExtra(KEY_SAFRA, safra);
-        intentResposta.putExtra(KEY_PAIS, paisSelecionado);
-//        intentResposta.putExtra(KEY_VINHO_TIPO_VINHO, tipoVinho);
-        intentResposta.putExtra(KEY_VINHO_TIPO_VINHO, tipoEnum.name());
-        intentResposta.putStringArrayListExtra(KEY_CARACTERISTICAS, (ArrayList<String>) caracteristicas);
-        intentResposta.putExtra(KEY_COMENTARIOS, comentarios);
+
+
+        VinhosDatabase database = VinhosDatabase.getInstance(this);
+        if (modo == MODO_NOVO) {
+
+            long novoId = database.getVinhoDao().insert(vinho);
+            if (novoId == -1) {
+                UtilsAlert.mostrarAviso(this, R.string.erro_ao_tentar_salvar);
+                return;
+            }
+
+            vinho.setId(novoId);
+
+        } else {
+
+            vinho.setId(vinhoOriginal.getId());
+            int quantidadeAlterada = database.getVinhoDao().update(vinho);
+
+            if (quantidadeAlterada == 0) {
+                UtilsAlert.mostrarAviso(this, R.string.erro_ao_tentar_alterar);
+                return;
+            }
+
+        }
+
+        salvarUltimoPaisSelecionado(spinnerPais.getSelectedItemPosition());
+
+        intentResposta.putExtra(KEY_ID, vinho.getId());
 
         setResult(MainActivity.RESULT_OK, intentResposta);
+
         finish();
     }
 

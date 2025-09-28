@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,7 +20,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
-import androidx.appcompat.view.ViewPropertyAnimatorCompatSet;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import br.edu.utfpr.heliobrandao.viniveritas.modelo.Tipo;
+import br.edu.utfpr.heliobrandao.viniveritas.modelo.Vinho;
+import br.edu.utfpr.heliobrandao.viniveritas.persistencia.VinhosDatabase;
 import br.edu.utfpr.heliobrandao.viniveritas.utils.UtilsAlert;
 
 public class VinhosActivity extends AppCompatActivity {
@@ -119,14 +119,22 @@ public class VinhosActivity extends AppCompatActivity {
 
     private void carregarDadosVinhos() {
 
-        listaVinhos = new ArrayList<>();
+        VinhosDatabase database = VinhosDatabase.getInstance(this);
+
+        if (ordenacaoCrescente) {
+            listaVinhos = database.getVinhoDao().queryAllAscending();
+        } else {
+            listaVinhos = database.getVinhoDao().queryAllDownward();
+        }
+
         Vinho vinho;
         vinhoRecyclerViewAdapter = new VinhoRecyclerViewAdapter(this, listaVinhos);
-
 
         vinhoRecyclerViewAdapter.setOnItemClickListener(new VinhoRecyclerViewAdapter.OnItemClickListener(){
             @Override
             public void onItemClick(View v, int position) {
+
+                posicaoVinhoSelecionado = position;
                 editarVinho();
             }
         });
@@ -165,13 +173,24 @@ public class VinhosActivity extends AppCompatActivity {
             return; // Posição inválida, não faz nada
         }
 
-        Vinho vinho = listaVinhos.get(posicaoVinhoSelecionado);
+        final Vinho vinho = listaVinhos.get(posicaoVinhoSelecionado);
 
         String mensagem = getString(R.string.deseja_apagar, vinho.getNome());
 
         DialogInterface.OnClickListener listenerSim = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                VinhosDatabase database = VinhosDatabase.getInstance(VinhosActivity.this);
+
+                int quantidadeAlterada = database.getVinhoDao().delete(vinho);
+
+                if (quantidadeAlterada != 1) {
+                    UtilsAlert.mostrarAviso(VinhosActivity.this,
+                                                    R.string.erro_ao_tentar_excluir);
+                    return;
+                }
+
                 listaVinhos.remove(posicaoVinhoSelecionado);
                 vinhoRecyclerViewAdapter.notifyItemRemoved(posicaoVinhoSelecionado);
                 Toast.makeText(VinhosActivity.this, R.string.vinho_excluído, Toast.LENGTH_LONG).show();
@@ -195,36 +214,14 @@ public class VinhosActivity extends AppCompatActivity {
             Bundle bundle = intent.getExtras();
 
             if (bundle != null) {
-                String nome = bundle.getString(MainActivity.KEY_VINHO_NOME);
-                String safra = bundle.getString(MainActivity.KEY_SAFRA);
-                int safraInt = Integer.parseInt(safra);
-                String pais = bundle.getString(MainActivity.KEY_PAIS);
-                String tipoString = bundle.getString(MainActivity.KEY_VINHO_TIPO_VINHO);
-                ArrayList<String> caracteristicas = bundle.getStringArrayList(MainActivity.KEY_CARACTERISTICAS);
-                String comentarios = bundle.getString(MainActivity.KEY_COMENTARIOS);
 
-                final Vinho vinho = listaVinhos.get(posicaoVinhoSelecionado);
+                final Vinho vinhoOriginal = listaVinhos.get(posicaoVinhoSelecionado);
 
-                final Vinho cloneVinho;
+                long id = bundle.getLong(MainActivity.KEY_ID);
+                final VinhosDatabase database = VinhosDatabase.getInstance(VinhosActivity.this);
+                final Vinho vinhoEditado = database.getVinhoDao().queryForId(id);
 
-                try {
-                    cloneVinho = (Vinho) vinho.clone();
-                } catch (CloneNotSupportedException e) {
-                    e.printStackTrace();
-                    UtilsAlert.mostrarAviso(VinhosActivity.this,
-                                                    R.string.erro_tipo_conversao);
-                    return;
-                }
-
-                vinho.setNome(nome);
-                vinho.setSafra(safraInt);
-                vinho.setPais(pais);
-
-                Tipo tipo = Tipo.valueOf(tipoString);
-                vinho.setTipo(tipo);
-
-                vinho.setCaracteristicas(caracteristicas);
-                vinho.setComentarios(comentarios);
+                listaVinhos.set(posicaoVinhoSelecionado, vinhoEditado);
 
                 ordenarListaVinhos();
 
@@ -238,8 +235,17 @@ public class VinhosActivity extends AppCompatActivity {
 
                     @Override
                     public void onClick(View v) {
-                        listaVinhos.remove(vinho);;
-                        listaVinhos.add(cloneVinho);;
+
+                        int quantidadeAlterada = database.getVinhoDao().update(vinhoOriginal);
+
+                        if (quantidadeAlterada != 1) {
+                            UtilsAlert.mostrarAviso(VinhosActivity.this,
+                                    R.string.erro_ao_tentar_alterar);
+                            return;
+                        }
+
+                        listaVinhos.remove(vinhoEditado);;
+                        listaVinhos.add(vinhoOriginal);;
 
                         ordenarListaVinhos();
                     }
@@ -260,12 +266,9 @@ public class VinhosActivity extends AppCompatActivity {
         Vinho vinho = listaVinhos.get(posicaoVinhoSelecionado);
         Intent intentAbertura = new Intent(this, MainActivity.class);
         intentAbertura.putExtra(MainActivity.KEY_MODO, MainActivity.MODO_EDITAR);
-        intentAbertura.putExtra(MainActivity.KEY_VINHO_NOME, vinho.getNome());
-        intentAbertura.putExtra(MainActivity.KEY_SAFRA, String.valueOf(vinho.getSafra()));
-        intentAbertura.putExtra(MainActivity.KEY_PAIS, vinho.getPais());
-        intentAbertura.putExtra(MainActivity.KEY_VINHO_TIPO_VINHO, vinho.getTipo().name());
-        intentAbertura.putStringArrayListExtra(MainActivity.KEY_CARACTERISTICAS, (ArrayList<String>) vinho.getCaracteristicas());
-        intentAbertura.putExtra(MainActivity.KEY_COMENTARIOS, vinho.getComentarios());
+
+        intentAbertura.putExtra(MainActivity.KEY_ID, vinho.getId());
+
 
         laucherEditarVinho.launch(intentAbertura);
 
@@ -283,16 +286,11 @@ public class VinhosActivity extends AppCompatActivity {
                         Bundle bundle = intent.getExtras();
 
                         if (bundle != null) {
-                            String nome = bundle.getString(MainActivity.KEY_VINHO_NOME);
-                            String safra = bundle.getString(MainActivity.KEY_SAFRA);
-                            int safraInt = Integer.parseInt(safra);
-                            String pais = bundle.getString(MainActivity.KEY_PAIS);
-                            String tipoString = bundle.getString(MainActivity.KEY_VINHO_TIPO_VINHO);
-                            ArrayList<String> caracteristicas = bundle.getStringArrayList(MainActivity.KEY_CARACTERISTICAS);
-                            String comentarios = bundle.getString(MainActivity.KEY_COMENTARIOS);
+                            long id = bundle.getLong(MainActivity.KEY_ID);
 
+                            VinhosDatabase database = VinhosDatabase.getInstance(VinhosActivity.this);
 
-                            Vinho vinho = new Vinho(nome, safraInt, pais, Tipo.valueOf(tipoString), caracteristicas, comentarios);
+                            Vinho vinho = database.getVinhoDao().queryForId(id);
 
                             listaVinhos.add(vinho);
 

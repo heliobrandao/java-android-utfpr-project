@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import br.edu.utfpr.heliobrandao.viniveritas.modelo.Vinho;
+
 public class VinhoRecyclerViewAdapter extends RecyclerView.Adapter<VinhoRecyclerViewAdapter.VinhoHolder> {
 
     private OnItemClickListener onItemClickListener;

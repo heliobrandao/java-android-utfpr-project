@@ -1,11 +1,18 @@
-package br.edu.utfpr.heliobrandao.viniveritas;
+package br.edu.utfpr.heliobrandao.viniveritas.modelo;
+
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
+@Entity
 public class Vinho implements Cloneable{
 
     public static Comparator<Vinho> ordenacaoCrescente = new Comparator<Vinho>() {
@@ -21,7 +28,13 @@ public class Vinho implements Cloneable{
             return -1 * v1.getNome().compareToIgnoreCase(v2.getNome());
         }
     };
+    @NonNull
+    @PrimaryKey(autoGenerate = true)
+    private long id;
+    @NonNull
+    @ColumnInfo(index = true)
     private String nome;
+
     private int safra;
     private String pais;
     private Tipo tipo;
@@ -38,6 +51,15 @@ public class Vinho implements Cloneable{
     }
 
     // Getters e Setters
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getNome() {
         return nome;
     }
@@ -95,10 +117,26 @@ public class Vinho implements Cloneable{
 
     @NonNull
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-
+    public Object clone() throws CloneNotSupportedException {
 
         return super.clone();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Vinho vinho = (Vinho) o;
+        return safra == vinho.safra &&
+                nome == vinho.nome &&
+                pais == vinho.pais &&
+                tipo == vinho.tipo &&
+                caracteristicas == vinho.caracteristicas &&
+                comentarios == vinho.comentarios;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nome, safra, pais, tipo, caracteristicas, comentarios);
     }
 
     @Override

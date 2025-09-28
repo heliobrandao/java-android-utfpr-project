@@ -1,6 +1,8 @@
-package br.edu.utfpr.heliobrandao.viniveritas;
+package br.edu.utfpr.heliobrandao.viniveritas.modelo;
 
 import android.content.Context;
+
+import br.edu.utfpr.heliobrandao.viniveritas.R;
 
 public enum Tipo {
     Tinto, // Ordinal 0

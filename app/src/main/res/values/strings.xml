@@ -87,4 +87,7 @@
     <string name="desfazer">Undo</string>
     <string name="alteracao_realizada">Update Done</string>
     <string name="erro_tipo_conversao">Type conversion error!</string>
+    <string name="erro_ao_tentar_salvar">Error trying to save the wine.</string>
+    <string name="erro_ao_tentar_alterar">Error trying to update</string>
+    <string name="erro_ao_tentar_excluir">Error trying to delete the wine.</string>
 </resources>
